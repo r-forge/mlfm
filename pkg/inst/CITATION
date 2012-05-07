@@ -1,0 +1,35 @@
+## R >= 2.8.0 passes package metadata to citation().
+meta <- packageDescription("mlfm")
+year <- sub(".*(20[[:digit:]]{2})-.*", "\\1", meta$Date)
+vers <- paste("R package version", meta$Version)
+
+c(
+  bibentry(bibtype = "Manual",
+           textVersion = paste("Rotolo F, Horny G (", year, ") ",
+             "mlfm: Semiparametric multilevel frailty models, ",
+             "estimated via EMPL method. ",
+             "URL http://cran.r-project.org/package=mlfm. ",
+             vers, sep=""),
+           key = "R:mlfm",
+           author = c(person(given="Federico", family="Rotolo"),
+                      person(given="Guillaume", family="Horny")),
+           title = paste("mlfm: Semiparametric multilevel frailty models,",
+                         "estimated via EMPL method"),
+           year = year,
+           note = vers,
+           url ="http://cran.r-project.org/package=mlfm"
+  ),
+  bibentry(bibtype = "Article",
+           textVersion = paste("Horny G (2009)",
+             "Inference in mixed proportional hazard models with K random effects.",
+             "Stat Papers 50:481--499"),
+           key = "Horny09",
+           author = person(given="Guillaume", family="Horny"),
+           journal = "Statistical Papers",
+           number = "50",
+           pages = "481--499",
+           title = paste("Inference in mixed proportional hazard models",
+                         "with K random effects"),
+           year = 2009
+  )
+)

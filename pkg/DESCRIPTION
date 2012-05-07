@@ -1,0 +1,14 @@
+Package: mlfm
+Type: Package
+Title: Semiparametric multilevel frailty models, estimated via EMPL method
+Version: 1.0
+Date: 2012-04-27
+Author: Federico Rotolo and Guillaume Horny
+Maintainer: Federico Rotolo <federico.rotolo@stat.unipd.it>
+Description: The package fits proportional hazard models with K>0 random effects.
+ Inference is based on the EM-PPL algorithm proposed by Horny (2009), 
+ Inference in mixed proportional hazard models with K random effects,
+ Stat Papers 50:481--499.
+License: GPL-2
+LazyLoad: yes
+Depends: survival, R (>= 2.10)
