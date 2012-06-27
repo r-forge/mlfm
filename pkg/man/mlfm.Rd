@@ -10,7 +10,7 @@
 
 \usage{
   mlfm(formula, data, 
-       eps = 1e-15, maxit = 100, 
+       eps = 1e-15, maxit = 50,
        showtime = TRUE, verbose = FALSE)
   
   \method{print}{mlfm}(x, digits = max(3, getOption("digits") - 3), ...)
@@ -55,7 +55,7 @@ Maintainer: Federico Rotolo <federico.rotolo@stat.unipd.it>
 \keyword{semiparametric}
 
 \seealso{
-  \code{\link[survival]{survival}}, 
+  \code{\link[survival]{coxph}}, 
   \code{\link[parfm]{parfm}}, 
   \code{\link[frailtypack]{frailtypack}}}
 
