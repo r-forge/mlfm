@@ -56,16 +56,22 @@ mlfm <- function(formula,
   ### - Initialisation - #######################################################
   beta <- coefficients(coxph(Terms[-(families-1)], data = data))
   
-  theta <- rep(1, length(families))
-  
   lnv <- mapply(rep, 0, apply(
     data[, substr(untangle.specials(Terms, "frailty")[[1]], 9, 
                   nchar(untangle.specials(Terms, "frailty")[[1]])-1)],
     2, function(x) nlevels(as.factor(x))))
-  
-  names(theta) <- names(lnv) <-
+  names(lnv) <-
     substr(untangle.specials(Terms, "frailty")[[1]], 9, 
            nchar(untangle.specials(Terms, "frailty")[[1]])-1)
+  
+  theta <- rep(NA, length(families))
+  names(theta) <- names(lnv)
+  for (f in names(lnv)) {
+    sfmod <- coxph(update.formula(Terms[-(families-1)], paste(
+      ".~. + frailty.gamma(", f, ", sparse=TRUE)")), data = data)
+    
+    theta[which(names(lnv) == f)] <- sfmod$history[[1]][[3]][sfmod$iter[1], 1]
+  }  
   
   betaOld <- beta
   thetaOld <- theta
