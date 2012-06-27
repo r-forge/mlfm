@@ -101,7 +101,7 @@ summary(data)
 head(data)
 
 ############################## - Model fitting - #############################
-mlmod <- mlfm(Surv(time, status) ~ Treat + Age +
+mlfmod <- mlfm(Surv(time, status) ~ Treat + Age +
   frailty(gr1) +frailty(gr2) +frailty(gr3) , data, verbose=TRUE)
-mlmod
+mlfmod
 }

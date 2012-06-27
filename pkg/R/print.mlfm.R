@@ -12,7 +12,7 @@
 #   Author: Federico Rotolo <federico.rotolo@stat.unipd.it>                    #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: April 27, 2012                                       #
+#   Last modification on: June 27, 2012                                        #
 ################################################################################
 
 print.mlfm <- function(x, 
@@ -36,8 +36,13 @@ print.mlfm <- function(x,
     print.default(cbind(" "=
       format(x$theta, digits = digits)
                         ), na.print="", print.gap = 2,  quote = FALSE)
+    cat(paste("Total frailty variance:",
+              format(prod(x$theta + 1) - 1, digits = digits), "\n"))
   } else {
     cat(paste("\n     Variance of random effect=", 
               format(x$theta, digits = digits)))
   }
+  
+  if (x$convergence)
+    cat("\nNOTE: the estimation procedure did not converge!\n")
 }

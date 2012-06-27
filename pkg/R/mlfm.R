@@ -21,13 +21,13 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: April 18, 2012                                       #
+#   Last modification on: June 27, 2012                                        #
 ################################################################################
 
 mlfm <- function(formula, 
                  data, 
                  eps      = 1E-15,
-                 maxit    = 100,
+                 maxit    = 50,
                  showtime = TRUE,
                  verbose  = FALSE) {
   require(survival)
@@ -83,7 +83,7 @@ mlfm <- function(formula,
     gc()
     iter[1] <- iter[1] + 1 
     if (verbose)
-      cat(paste(" Iteration ", format(iter[1], width=3), ":", sep=""))
+      cat(paste(" Iteration ", format(iter[1], width=3), ": ", sep=""))
     # backup of the present betas
     betaOld <- beta
     
@@ -134,7 +134,7 @@ mlfm <- function(formula,
     
     mod <- coxph(form, data=data)
     
-    iter[-1] <-iter[-1] + mod$iter
+    iter[-1] <- iter[-1] + mod$iter
     
     # set-up of the new betas
     beta <- coefficients(mod)
@@ -146,15 +146,18 @@ mlfm <- function(formula,
     if (verbose) cat(formatC(crit, format="E", digits=2), "\n", sep="")
   }
   ###################################################### - End of EM cycle - ###
+  if (verbose && (iter[1] >= maxit))
+    cat("\nThe procdeure did not converge!\n")
   
   mod <- list(
-    call  = Call,
-    beta  = coefficients(mod),
-    theta = theta,
-    frail = lnv,
-    iter  = iter,
-    crit  = crit,
-    extime = diff(c(exTimeStart, Sys.time()))
+    call        = Call,
+    beta        = coefficients(mod),
+    theta       = theta,
+    frail       = lnv,
+    iter        = iter,
+    convergence = as.numeric(iter[1] >= maxit),
+    crit        = crit,
+    extime      = diff(c(exTimeStart, Sys.time()))
     )
   class(mod) <- "mlfm"
   
