@@ -21,12 +21,12 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: June 27, 2012                                        #
+#   Last modification on: July 9, 2012                                         #
 ################################################################################
 
 mlfm <- function(formula, 
                  data, 
-                 eps      = 1E-15,
+                 eps      = 1E-10,
                  maxit    = 50,
                  showtime = TRUE,
                  verbose  = FALSE) {
@@ -110,7 +110,7 @@ mlfm <- function(formula,
       }
       
       form <- update.formula(formula, paste(
-        ".~. + frailty.gamma(", f, ", sparse=TRUE)", 
+        ".~. + frailty.gamma(", f, ", sparse=TRUE, eps=1e-20)", 
         paste(" - frailty(", names(lnv), ")", 
               sep="", collapse=""),
         " + offset(offs)", sep="", collapse=""))
@@ -138,7 +138,7 @@ mlfm <- function(formula,
             sep="", collapse=""),
       " + offset(offs)", sep="", collapse=""))
     
-    mod <- coxph(form, data=data)
+    mod <- coxph(form, data=data, iter.max = 30, outer.max=20)
     
     iter[-1] <- iter[-1] + mod$iter
     
@@ -169,7 +169,8 @@ mlfm <- function(formula,
   
   if (showtime) cat(paste("\nExecution time:", 
                           format(mod$extime, 
-                                 digits = max(3, getOption("digits") - 3))))
+                                 digits = max(3, getOption("digits") - 3)), 
+                          "\n"))
   
   ### - Return results - #######################################################
   return(mod)

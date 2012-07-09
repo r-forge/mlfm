@@ -10,7 +10,7 @@
 
 \usage{
   mlfm(formula, data, 
-       eps = 1e-15, maxit = 50,
+       eps = 1e-10, maxit = 50,
        showtime = TRUE, verbose = FALSE)
   
   \method{print}{mlfm}(x, digits = max(3, getOption("digits") - 3), ...)
