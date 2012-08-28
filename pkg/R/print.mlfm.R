@@ -16,7 +16,7 @@
 ################################################################################
 
 print.mlfm <- function(x, 
-                       digits = max(3, getOption("digits") - 3),
+                       digits = max(3, getOption("digits") - 3) - 1,
                        ...) {
   cat("Call:\n")
   print(x$call)
@@ -44,6 +44,6 @@ print.mlfm <- function(x,
               format(x$theta, digits = digits)))
   }
   
-  if (x$convergence)
-    cat("\nNOTE: the estimation procedure did not converge!\n")
+#   if (x$convergence)
+#     cat("\nNOTE: the estimation procedure did not converge!\n")
 }
