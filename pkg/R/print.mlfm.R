@@ -12,7 +12,7 @@
 #   Author: Federico Rotolo <federico.rotolo@stat.unipd.it>                    #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: June 27, 2012                                        #
+#   Last modification on: August 28, 2012                                      #
 ################################################################################
 
 print.mlfm <- function(x, 
@@ -23,9 +23,10 @@ print.mlfm <- function(x,
   cat("\n")
   
   print.default(cbind(
-    coef = format(x$beta, digits = digits),
-    se   = NA,
-    p    = NA
+    coef = signif(x$beta, digits = digits),
+    se   = signif(x$ses,  digits = digits),
+    p    = signif(pchisq((x$beta / x$ses)^2, df=1, lower.tail=FALSE), 
+                  digits = digits)
     ), na.print = "", print.gap = 2,  quote = FALSE)
   
   cat(paste("\nIterations:",

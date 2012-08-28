@@ -21,7 +21,7 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: July 9, 2012                                         #
+#   Last modification on: August 28, 2012                                      #
 ################################################################################
 
 mlfm <- function(formula, 
@@ -158,6 +158,7 @@ mlfm <- function(formula,
   mod <- list(
     call        = Call,
     beta        = coefficients(mod),
+    ses         = sqrt(diag(mod$var)),
     theta       = theta,
     frail       = lnv,
     iter        = iter,
