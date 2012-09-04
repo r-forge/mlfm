@@ -21,15 +21,17 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: August 28, 2012                                      #
+#   Last modification on: September 4, 2012                                    #
 ################################################################################
 
 mlfm <- function(formula, 
                  data, 
                  eps      = 1E-10,
+                 frailty.eps = 1E-11,
                  maxit    = 50,
                  showtime = TRUE,
-                 verbose  = FALSE) {
+                 verbose  = FALSE,
+                 sparse   = TRUE) {
   require(survival)
   
   exTimeStart <- Sys.time()
@@ -68,9 +70,11 @@ mlfm <- function(formula,
   names(theta) <- names(lnv)
   for (f in names(lnv)) {
     sfmod <- coxph(update.formula(Terms[-(families-1)], paste(
-      ".~. + frailty.gamma(", f, ", sparse=TRUE)")), data = data)
+      ".~. + frailty.gamma(", f, ", sparse=", sparse,
+      ", eps=", frailty.eps,")")), data = data)
     
-    theta[which(names(lnv) == f)] <- sfmod$history[[1]][[3]][sfmod$iter[1], 1]
+    theta[which(names(lnv) == f)] <- sfmod$history[[1]]$theta
+#     theta[which(names(lnv) == f)] <- sfmod$history[[1]][[3]][sfmod$iter[1], 1]
   }  
   
   betaOld <- beta
@@ -110,7 +114,8 @@ mlfm <- function(formula,
       }
       
       form <- update.formula(formula, paste(
-        ".~. + frailty.gamma(", f, ", sparse=TRUE, eps=1e-20)", 
+        ".~. + frailty.gamma(", f, ", sparse=", sparse,
+        ", eps=", frailty.eps,")", 
         paste(" - frailty(", names(lnv), ")", 
               sep="", collapse=""),
         " + offset(offs)", sep="", collapse=""))
@@ -121,7 +126,8 @@ mlfm <- function(formula,
       
       # set-up of the new log-frailties and theta
       lnv[[f]] <- mod$frail
-      theta[f] <- mod$history[[1]][[3]][mod$iter[1], 1]
+      theta[f] <- mod$history[[1]]$theta
+#       theta[f] <- mod$history[[1]][[3]][mod$iter[1], 1]
     }
     #################################################### - End of EXP step - ###
     

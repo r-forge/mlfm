@@ -10,10 +10,10 @@
 
 \usage{
   mlfm(formula, data, 
-       eps = 1e-10, maxit = 50,
-       showtime = TRUE, verbose = FALSE)
+       eps = 1e-10, frailty.eps = 1e-11, maxit = 50,
+       showtime = TRUE, verbose = FALSE, sparse = TRUE)
   
-  \method{print}{mlfm}(x, digits = max(3, getOption("digits") - 3), ...)
+  \method{print}{mlfm}(x, digits = max(3, getOption("digits") - 3) - 1, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,9 +23,13 @@
 }
   \item{data}{a \code{\link{data.frame}} containing all the variables}
   \item{eps}{the threshold used to state convergence}
+  \item{frailty.eps}{the threshold used to state convergence within PPL fits
+    (see \code{\link[survival]{coxph.control}})}
   \item{maxit}{the maximum number of iteration for the outer loop (EM)}
   \item{showtime}{display the execution time}
   \item{verbose}{display the progression status over EM steps}
+  \item{sparse}{wether to use sparse computation
+    (see \code{\link[survival]{frailty}})}
   \item{x}{the object of class \code{mlfm} to print}
   \item{digits}{the number of digits to display in results}
   \item{...}{other arguments (see \code{\link{print}})}
