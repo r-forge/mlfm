@@ -21,7 +21,7 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: September 4, 2012                                    #
+#   Last modification on: September 6, 2012                                    #
 ################################################################################
 
 mlfm <- function(formula, 
@@ -50,8 +50,8 @@ mlfm <- function(formula,
   Terms <- terms(formula, specials=c("frailty"), data = data)  
   
   families <- attr(Terms, "specials")$frailty
-  if (is.null(families))
-    stop("At least one group variable is required")
+  if (length(families) < 2)
+    stop("At least two group variables are required")
   ######################################################## - End of Checks - ###
   
   
@@ -60,8 +60,10 @@ mlfm <- function(formula,
   
   lnv <- mapply(rep, 0, apply(
     data[, substr(untangle.specials(Terms, "frailty")[[1]], 9, 
-                  nchar(untangle.specials(Terms, "frailty")[[1]])-1)],
-    2, function(x) nlevels(as.factor(x))))
+                  nchar(untangle.specials(Terms, "frailty")[[1]])-1),
+         drop=FALSE],
+    2, function(x) nlevels(as.factor(x))),
+                SIMPLIFY=FALSE)
   names(lnv) <-
     substr(untangle.specials(Terms, "frailty")[[1]], 9, 
            nchar(untangle.specials(Terms, "frailty")[[1]])-1)
@@ -73,8 +75,8 @@ mlfm <- function(formula,
       ".~. + frailty.gamma(", f, ", sparse=", sparse,
       ", eps=", frailty.eps,")")), data = data)
     
-    theta[which(names(lnv) == f)] <- sfmod$history[[1]]$theta
-#     theta[which(names(lnv) == f)] <- sfmod$history[[1]][[3]][sfmod$iter[1], 1]
+#     theta[which(names(lnv) == f)] <- sfmod$history[[1]]$theta
+    theta[which(names(lnv) == f)] <- sfmod$history[[1]][[3]][sfmod$iter[1], 1]
   }  
   
   betaOld <- beta
@@ -96,6 +98,10 @@ mlfm <- function(formula,
       cat(paste(" Iteration ", format(iter[1], width=3), ": ", sep=""))
     # backup of the present betas
     betaOld <- beta
+    betaOffs <- as.vector(as.matrix(data[, as.character(
+      attr(Terms, "variables")[-(1:2)][-(
+        untangle.specials(Terms, "frailty")[[2]])]),
+                                         drop=FALSE]) %*% beta)
     
     ### - EXP step for v, each level separately - ##############################
     # corresponding to Steps A and B of Horny (2009)
@@ -107,27 +113,33 @@ mlfm <- function(formula,
       thetaOld[f] <- theta[f]
       
       # PPL for present family
-      data$offs <- 0
+      data$offs <- betaOffs
       for (of in (names(lnv)[names(lnv) != f])) {
         data$offs[as.numeric(data[, of]) > 0] <- 
           data$offs[as.numeric(data[, of]) > 0] + lnv[[of]][data[, of]]
       }
       
-      form <- update.formula(formula, paste(
-        ".~. + frailty.gamma(", f, ", sparse=", sparse,
-        ", eps=", frailty.eps,")", 
-        paste(" - frailty(", names(lnv), ")", 
-              sep="", collapse=""),
-        " + offset(offs)", sep="", collapse=""))
+#       form <- update.formula(formula, paste(
+#         ".~. + frailty.gamma(", f, ", sparse=", sparse,
+#         ", eps=", frailty.eps,")", 
+#         paste(" - frailty(", names(lnv), ")", 
+#               sep="", collapse=""),
+#         " + offset(offs)", sep="", collapse=""))
       
-      mod <- coxph(form, data=data)
+      form <- update.formula(formula, paste(
+        ".~ frailty.gamma(", f, ", sparse=", sparse,
+        ", eps=", frailty.eps,")",
+        " + offset(offs)", sep="", collapse=""))
+#       
+      
+      mod <- coxph(form, data=data, iter.max = 30, outer.max=20)
       
       iter[-1] <- iter[-1] + mod$iter
       
       # set-up of the new log-frailties and theta
       lnv[[f]] <- mod$frail
-      theta[f] <- mod$history[[1]]$theta
-#       theta[f] <- mod$history[[1]][[3]][mod$iter[1], 1]
+#       theta[f] <- mod$history[[1]]$theta
+      theta[f] <- mod$history[[1]][[3]][mod$iter[1], 1]
     }
     #################################################### - End of EXP step - ###
     
