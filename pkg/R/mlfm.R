@@ -47,7 +47,7 @@ mlfm <- function(formula,
   if (!match("formula", names(Call), nomatch=0))
     stop("A formula argument is required")
   
-  Terms <- terms(formula, specials=c("frailty"), data = data)  
+  Terms <- terms(formula, specials=c("frailty", "strata"), data = data)  
   
   families <- attr(Terms, "specials")$frailty
   if (length(families) < 2)
@@ -99,8 +99,9 @@ mlfm <- function(formula,
     # backup of the present betas
     betaOld <- beta
     betaOffs <- as.vector(as.matrix(data[, as.character(
-      attr(Terms, "variables")[-(1:2)][-(
-        untangle.specials(Terms, "frailty")[[2]])]),
+      attr(Terms, "variables")[-(1:2)][-c(
+        untangle.specials(Terms, "frailty")[[2]],
+        untangle.specials(Terms, "strata")[[2]])]),
                                          drop=FALSE]) %*% beta)
     
     ### - EXP step for v, each level separately - ##############################

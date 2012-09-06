@@ -1,7 +1,7 @@
 Package: mlfm
 Type: Package
 Title: Semiparametric multilevel frailty models, estimated via EMPL method
-Version: 1.2
+Version: 1.2-1
 Date: 2012-07-06
 Author: Federico Rotolo and Guillaume Horny
 Maintainer: Federico Rotolo <federico.rotolo@stat.unipd.it>
