@@ -105,7 +105,7 @@ mlfm <- function(formula,
                     untangle.specials(Terms, "strata")[[1]]),
                   collapse=" - "),
             sep=" - ")),
-                                       data=data)[, -1] %*% beta)
+                                       data=data)[, -1, drop=FALSE] %*% beta)
     
     ### - EXP step for v, each level separately - ##############################
     # corresponding to Steps A and B of Horny (2009)
