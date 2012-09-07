@@ -95,17 +95,17 @@ rho <- 1.2
 tcens <- 1.5
 simBetas <- c(.5, log(1.2) / 10)
 
-data$time <-pmin(tcens, (- log(runif(nsim, 0, 1)) / (lambda * 
+data$Time <-pmin(tcens, (- log(runif(nsim, 0, 1)) / (lambda * 
   apply(data[, paste("u", 1:nrow(grVar), sep="")], 1, prod) *
   as.vector(exp(simBetas \%*\% t(data[, c("Treat", "Age")])))
                                                      ))^(1 / rho))
-data$status <- 0 + (data$time < tcens)
+data$Status <- 0 + (data$Time < tcens)
 
 summary(data)
 head(data)
 
 ############################## - Model fitting - #############################
-mlfmod <- mlfm(Surv(time, status) ~ Treat + Age +
-  frailty(gr1) +frailty(gr2) +frailty(gr3) , data, verbose=TRUE)
+mlfmod <- mlfm(Surv(Time, Status) ~ Treat + Age +
+  frailty(gr1) +frailty(gr2) +frailty(gr3) , data=data, verbose=TRUE)
 mlfmod
 }

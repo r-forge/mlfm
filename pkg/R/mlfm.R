@@ -21,7 +21,7 @@
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: September 6, 2012                                    #
+#   Last modification on: September 7, 2012                                    #
 ################################################################################
 
 mlfm <- function(formula, 
@@ -98,11 +98,14 @@ mlfm <- function(formula,
       cat(paste(" Iteration ", format(iter[1], width=3), ": ", sep=""))
     # backup of the present betas
     betaOld <- beta
-    betaOffs <- as.vector(as.matrix(data[, as.character(
-      attr(Terms, "variables")[-(1:2)][-c(
-        untangle.specials(Terms, "frailty")[[2]],
-        untangle.specials(Terms, "strata")[[2]])]),
-                                         drop=FALSE]) %*% beta)
+    
+    betaOffs <- as.vector(model.matrix(as.formula(
+      paste(paste(formula[c(2, 3)], collapse=" ~ "),
+            paste(c(untangle.specials(Terms, "frailty")[[1]],
+                    untangle.specials(Terms, "strata")[[1]]),
+                  collapse=" - "),
+            sep=" - ")),
+                                       data=data)[, -1] %*% beta)
     
     ### - EXP step for v, each level separately - ##############################
     # corresponding to Steps A and B of Horny (2009)
