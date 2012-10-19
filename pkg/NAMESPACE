@@ -1,6 +1,11 @@
-export(mlfm, print.mlfm)
+export(      mlfm, 
+        plot.mlfm, 
+       print.mlfm)
 
 # Import all packages listed as Imports or Depends
 import(
   survival
 )
+
+S3method(print, mlfm)
+S3method(plot, mlfm)
