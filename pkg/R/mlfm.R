@@ -17,11 +17,11 @@
 #   - verbose  : display the progression status over EM steps                  #
 #                                                                              #
 ################################################################################
-#   Author: Federico Rotolo <federico.rotolo@stat.unipd.it>                    #
+#   Author: Federico Rotolo <federico.rotolo@gustaveroussy.fr>                 #
 #   Original code by Guillaume Horny                                           #
 #                                                                              #
 #   Date: April 17, 2012                                                       #
-#   Last modification on: September 7, 2012                                    #
+#   Last modification on: June 14, 2013                                        #
 ################################################################################
 
 mlfm <- function(formula, 
@@ -87,7 +87,12 @@ mlfm <- function(formula,
   crit <- eps + .1
   ################################################ - End of Initialisation - ###
   
-  if (verbose) cat("\n# - CRITERION - #\n")
+  if (verbose) {
+    crit = 1
+    cat("\n# - CRITERION - #\n")
+    cat(paste0(c(" Iteration    0 (crit= ", 
+                 format(crit, digits=2, scientific=TRUE), ")"), collapse=""))
+  }
   
   ### - EM cycle - #############################################################
   # corresponding to Step D of Horny (2009)
@@ -95,7 +100,10 @@ mlfm <- function(formula,
     gc()
     iter[1] <- iter[1] + 1 
     if (verbose)
-      cat(paste(" Iteration ", format(iter[1], width=3), ": ", sep=""))
+      cat(paste0(c(rep("\b", 20), format(iter[1], width=4), " (crit= ", 
+                   format(crit, digits=2, scientific=TRUE, trim=FALSE, width=7),
+                   ")"), collapse=""))
+    
     # backup of the present betas
     betaOld <- beta
     
@@ -171,7 +179,8 @@ mlfm <- function(formula,
     # Termination criteria
     crit <- sum((c(log(theta), beta, unlist(lnv)) - 
       c(log(thetaOld), betaOld, unlist(lnvOld)))^2)
-    if (verbose) cat(formatC(crit, format="E", digits=2), "\n", sep="")
+#     if (verbose) 
+#       cat(format(crit, scientific=TRUE, digits=2), "\n", sep="")
   }
   ###################################################### - End of EM cycle - ###
   if (verbose && (iter[1] >= maxit))
@@ -186,7 +195,8 @@ mlfm <- function(formula,
     iter        = iter,
     convergence = as.numeric(iter[1] >= maxit),
     crit        = crit,
-    extime      = diff(c(exTimeStart, Sys.time()))
+    extime      = diff(c(exTimeStart, Sys.time())),
+    lastfit     = mod
     )
   class(mod) <- "mlfm"
   

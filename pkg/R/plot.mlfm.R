@@ -20,7 +20,7 @@ plot.mlfm <- function(model,
                        main=NULL, 
                        coef=NULL, 
                        signcol=TRUE, 
-                       cex=1){
+                       cex=1, ...){
   if (is.null(coef)) {
     n <- length(model$beta)
     if ("survreg"%in%class(model)) n<-n-1
